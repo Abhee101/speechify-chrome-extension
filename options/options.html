@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EchoRead AI Settings</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <div class="options-container">
+    <!-- Header -->
+    <header class="options-header">
+      <div class="brand">
+        <img src="../icons/icon48.png" alt="EchoRead AI Logo" class="brand-logo">
+        <div>
+          <h1>EchoRead AI Settings</h1>
+          <p>Customize your voice reading, word highlights, and controls</p>
+        </div>
+      </div>
+      <button id="btn-save" class="save-btn">Save Changes</button>
+    </header>
+
+    <div class="settings-grid">
+      <!-- Voice & Audio -->
+      <section class="card">
+        <h2>🎙️ Voice & Audio Settings</h2>
+        
+        <div class="setting-item">
+          <label for="opt-voice">Preferred Voice</label>
+          <div class="inline-group">
+            <select id="opt-voice" class="form-select"></select>
+            <button id="opt-btn-test-voice" class="test-btn">Test</button>
+          </div>
+          <span class="help-text">Choose from your system and browser's natural speech synthesizers.</span>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-header-row">
+            <label for="opt-rate">Default Speed</label>
+            <span id="rate-value" class="value-tag">1.0x</span>
+          </div>
+          <input type="range" id="opt-rate" min="0.5" max="3.0" step="0.25" value="1.0" class="range-slider">
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-header-row">
+            <label for="opt-pitch">Voice Pitch</label>
+            <span id="pitch-value" class="value-tag">1.0</span>
+          </div>
+          <input type="range" id="opt-pitch" min="0.5" max="1.5" step="0.1" value="1.0" class="range-slider">
+        </div>
+      </section>
+
+      <!-- Visual Highlighting -->
+      <section class="card">
+        <h2>🎨 Visual Word Highlighting</h2>
+
+        <div class="setting-item">
+          <label for="opt-word-color">Word Highlight Color</label>
+          <div class="inline-group">
+            <input type="color" id="opt-word-color" value="#ffd54f" class="color-picker">
+            <span id="word-color-hex" class="hex-text">#ffd54f</span>
+          </div>
+          <span class="help-text">The color of the current active spoken word.</span>
+        </div>
+
+        <div class="setting-item">
+          <label for="opt-sentence-color">Sentence Highlight Background</label>
+          <div class="inline-group">
+            <input type="color" id="opt-sentence-color" value="#6366f1" class="color-picker">
+            <span id="sentence-color-hex" class="hex-text">#6366f1</span>
+          </div>
+          <span class="help-text">Background illumination applied to the current sentence.</span>
+        </div>
+
+        <!-- Live Preview -->
+        <div class="preview-box">
+          <span class="preview-label">LIVE PREVIEW</span>
+          <p id="preview-text" class="preview-sentence">
+            Reading and listening at the same time transforms how you <span id="preview-word" class="preview-active-word">absorb</span> knowledge.
+          </p>
+        </div>
+      </section>
+
+      <!-- Behaviors -->
+      <section class="card">
+        <h2>⚡ Reading Behavior</h2>
+
+        <div class="toggle-item">
+          <div>
+            <span class="toggle-title">Auto-Scroll Webpage</span>
+            <span class="help-text">Smoothly scrolls the browser window to keep the spoken sentence centered.</span>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="opt-autoscroll" checked>
+            <span class="slider round"></span>
+          </label>
+        </div>
+
+        <div class="toggle-item">
+          <div>
+            <span class="toggle-title">Show "Listen" Tooltip on Selection</span>
+            <span class="help-text">Shows a floating button right above any selected text on web pages.</span>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="opt-selection-bubble" checked>
+            <span class="slider round"></span>
+          </label>
+        </div>
+
+        <div class="toggle-item">
+          <div>
+            <span class="toggle-title">Voice Commands Active</span>
+            <span class="help-text">Allow controlling reading via microphone ("play", "pause", "faster", "next").</span>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="opt-voice-commands" checked>
+            <span class="slider round"></span>
+          </label>
+        </div>
+      </section>
+
+      <!-- Keyboard Shortcuts -->
+      <section class="card">
+        <h2>⌨️ Keyboard Shortcuts</h2>
+        <table class="shortcuts-table">
+          <tr>
+            <td>Play / Pause Reading</td>
+            <td><kbd>Alt + P</kbd></td>
+          </tr>
+          <tr>
+            <td>Stop Audio Playback</td>
+            <td><kbd>Alt + S</kbd></td>
+          </tr>
+          <tr>
+            <td>Open Side Panel Reader</td>
+            <td><kbd>Alt + O</kbd></td>
+          </tr>
+          <tr>
+            <td>Open Fullscreen Reader Tab</td>
+            <td><kbd>Alt + R</kbd></td>
+          </tr>
+          <tr>
+            <td>Skip Sentence (Reader Tab)</td>
+            <td><kbd>Left</kbd> / <kbd>Right Arrow</kbd></td>
+          </tr>
+        </table>
+      </section>
+    </div>
+
+    <div id="save-toast" class="toast">Settings saved successfully!</div>
+  </div>
+
+  <script src="options.js"></script>
+</body>
+</html>

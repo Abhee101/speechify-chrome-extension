@@ -1,0 +1,23 @@
+{
+  "name": "echoread-ai",
+  "version": "1.0.0",
+  "description": "EchoRead AI - Speechify Voice Reader Chrome Extension & Android PWA",
+  "main": "background/service-worker.js",
+  "scripts": {
+    "start": "npx serve . -l 3000",
+    "build:zip": "node scripts/package-extension.js",
+    "android:init": "npx @capacitor/cli init \"EchoRead AI\" com.echoread.app --web-dir reader",
+    "android:add": "npx @capacitor/cli add android",
+    "android:build": "npx @capacitor/cli open android"
+  },
+  "keywords": [
+    "speechify",
+    "text-to-speech",
+    "chrome-extension",
+    "tts",
+    "audio-reader",
+    "accessibility"
+  ],
+  "author": "EchoRead Team",
+  "license": "MIT"
+}

@@ -1,0 +1,365 @@
+/* EchoRead AI - Scoped Floating Widget & Highlight Styles */
+
+/* CSS Custom Highlight API Styling (Modern Chrome) */
+::highlight(echoread-word) {
+  background-color: #ffd54f !important;
+  color: #111827 !important;
+  border-radius: 3px;
+  font-weight: 600;
+  box-shadow: 0 0 0 2px #f59e0b;
+}
+
+::highlight(echoread-sentence) {
+  background-color: rgba(99, 102, 241, 0.16) !important;
+  border-radius: 4px;
+}
+
+/* Fallback highlight classes */
+.echoread-active-sentence {
+  background-color: rgba(99, 102, 241, 0.16) !important;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.3);
+}
+
+.echoread-active-word {
+  background-color: #ffd54f !important;
+  color: #111827 !important;
+  border-radius: 3px;
+  font-weight: 600;
+  display: inline;
+}
+
+/* Selection Quick-Play Tooltip */
+#echoread-selection-bubble {
+  position: absolute;
+  z-index: 2147483646;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: #1e1b4b;
+  color: #ffffff;
+  border-radius: 30px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  animation: echoread-pop-in 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+#echoread-selection-bubble:hover {
+  background: #312e81;
+  transform: translateY(-2px) scale(1.03);
+}
+
+#echoread-selection-bubble svg {
+  width: 15px;
+  height: 15px;
+  fill: currentColor;
+}
+
+/* Main Floating Player Dock */
+#echoread-player-container {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2147483647;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: #f3f4f6;
+  user-select: none;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+#echoread-player-container.minimized {
+  bottom: 20px;
+  left: auto;
+  right: 24px;
+  transform: none;
+}
+
+.echoread-player-card {
+  display: flex;
+  flex-direction: column;
+  background: rgba(17, 24, 39, 0.94);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 18px;
+  padding: 10px 16px;
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.08);
+  width: 580px;
+  max-width: 92vw;
+  box-sizing: border-box;
+}
+
+.echoread-mini-bubble {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  border-radius: 50%;
+  box-shadow: 0 10px 25px rgba(99, 102, 241, 0.5);
+  cursor: pointer;
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  transition: transform 0.2s ease;
+}
+
+.echoread-mini-bubble:hover {
+  transform: scale(1.08);
+}
+
+#echoread-player-container.minimized .echoread-player-card {
+  display: none;
+}
+
+#echoread-player-container.minimized .echoread-mini-bubble {
+  display: flex;
+}
+
+/* Header & Progress Info */
+.echoread-bar-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.echoread-brand-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.echoread-logo-dot {
+  width: 8px;
+  height: 8px;
+  background: #10b981;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #10b981;
+  animation: echoread-pulse 2s infinite;
+}
+
+.echoread-brand-name {
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.2px;
+}
+
+.echoread-progress-text {
+  font-size: 11px;
+  color: #9ca3af;
+  background: rgba(255, 255, 255, 0.06);
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.echoread-window-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.echoread-icon-btn {
+  background: transparent;
+  border: none;
+  color: #9ca3af;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.echoread-icon-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+/* Scrubbable Progress Bar */
+.echoread-progress-track {
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 2px;
+  cursor: pointer;
+  margin-bottom: 10px;
+  position: relative;
+  overflow: hidden;
+}
+
+.echoread-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #6366f1, #a855f7);
+  width: 0%;
+  border-radius: 2px;
+  transition: width 0.15s ease;
+}
+
+/* Controls Row */
+.echoread-controls-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.echoread-playback-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.echoread-control-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  color: #f3f4f6;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.echoread-control-btn:hover {
+  background: rgba(255, 255, 255, 0.16);
+  transform: scale(1.05);
+}
+
+.echoread-play-pause-btn {
+  width: 44px;
+  height: 44px;
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  border: none;
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+}
+
+.echoread-play-pause-btn:hover {
+  background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+  box-shadow: 0 6px 18px rgba(99, 102, 241, 0.6);
+}
+
+/* Voice & Speed Options */
+.echoread-settings-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.echoread-speed-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #f3f4f6;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 10px;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  min-width: 44px;
+  text-align: center;
+}
+
+.echoread-speed-btn:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.echoread-voice-select {
+  background: rgba(31, 41, 55, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #f3f4f6;
+  font-size: 11px;
+  padding: 5px 8px;
+  border-radius: 8px;
+  max-width: 140px;
+  outline: none;
+  cursor: pointer;
+}
+
+.echoread-mic-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  width: 34px;
+  height: 34px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9ca3af;
+  transition: all 0.15s ease;
+}
+
+.echoread-mic-btn.active {
+  background: #ef4444;
+  color: #ffffff;
+  border-color: #f87171;
+  animation: echoread-pulse-red 1.5s infinite;
+}
+
+/* Injected Toast */
+#echoread-toast {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 2147483647;
+  background: #111827;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 10px 16px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transform: translateY(-20px);
+  opacity: 0;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+
+#echoread-toast.visible {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* Animations */
+@keyframes echoread-pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes echoread-pulse {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+  70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+@keyframes echoread-pulse-red {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+  70% { transform: scale(1.05); box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
