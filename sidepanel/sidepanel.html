@@ -15,10 +15,10 @@
         <span class="header-title">EchoRead Panel</span>
       </div>
       <div class="header-tools">
-        <button id="btn-sync-page" class="panel-icon-btn" title="Sync & Read Page">
+        <button id="btn-sync-page" class="panel-icon-btn" aria-label="Refresh & sync page" title="Sync & Read Page">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
         </button>
-        <button id="btn-open-tab" class="panel-icon-btn" title="Open Fullscreen Reader Tab">
+        <button id="btn-open-tab" class="panel-icon-btn" aria-label="Open Fullscreen Reader" title="Open Fullscreen Reader Tab">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg>
         </button>
       </div>
@@ -39,7 +39,10 @@
     <!-- Interactive Transcript Container -->
     <div class="transcript-wrapper">
       <div class="transcript-toolbar">
-        <span class="toolbar-label">TRANSCRIPT & LIVE HIGHLIGHT</span>
+        <div class="search-input-wrap">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          <input type="text" id="panel-search-input" class="search-input" placeholder="Search transcript...">
+        </div>
         <button id="btn-clear-transcript" class="toolbar-link">Clear</button>
       </div>
       <div id="panel-transcript" class="panel-transcript">
@@ -53,27 +56,27 @@
 
     <!-- Floating Bottom Player Dock -->
     <div class="panel-player-bar">
-      <div class="player-scrub-track" id="panel-scrub">
+      <div class="player-scrub-track" id="panel-scrub" title="Seek sentence">
         <div class="player-scrub-fill" id="panel-scrub-fill"></div>
       </div>
 
       <div class="player-inner">
         <div class="player-controls">
-          <button id="panel-btn-prev" class="player-btn" title="Previous Sentence">
+          <button id="panel-btn-prev" class="player-btn" aria-label="Previous Sentence" title="Previous Sentence">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
           </button>
-          <button id="panel-btn-play" class="player-btn player-btn-main" title="Play / Pause">
+          <button id="panel-btn-play" class="player-btn player-btn-main" aria-label="Play or Pause" title="Play / Pause">
             <svg id="panel-play-icon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
             <svg id="panel-pause-icon" style="display:none;" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
           </button>
-          <button id="panel-btn-next" class="player-btn" title="Next Sentence">
+          <button id="panel-btn-next" class="player-btn" aria-label="Next Sentence" title="Next Sentence">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
           </button>
         </div>
 
         <div class="player-settings">
-          <button id="panel-speed-btn" class="player-pill-btn">1.0x</button>
-          <select id="panel-voice-select" class="player-voice-picker"></select>
+          <button id="panel-speed-btn" class="player-pill-btn" aria-label="Cycle speed" title="Click to cycle speed">1.0x</button>
+          <select id="panel-voice-select" class="player-voice-picker" aria-label="Select voice" title="Voice"></select>
         </div>
       </div>
     </div>

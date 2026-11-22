@@ -23,7 +23,7 @@
     <header class="app-header">
       <div class="header-left">
         <div class="app-brand">
-          <img src="../icons/icon48.png" alt="EchoRead" class="app-logo">
+          <img src="../icons/icon48.png" alt="EchoRead Logo" class="app-logo">
           <span class="app-name">EchoRead</span>
         </div>
         <div class="stats-badge" id="stats-badge">
@@ -34,19 +34,19 @@
       <div class="header-right">
         <!-- Mode Switcher -->
         <div class="view-toggle">
-          <button id="btn-view-read" class="toggle-btn active" title="Reading Mode">
+          <button id="btn-view-read" class="toggle-btn active" aria-label="Reading Mode" title="Reading Mode">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
             <span>Read</span>
           </button>
-          <button id="btn-view-edit" class="toggle-btn" title="Edit / Paste Text">
+          <button id="btn-view-edit" class="toggle-btn" aria-label="Edit / Paste Text" title="Edit / Paste Text">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
             <span>Edit</span>
           </button>
         </div>
 
-        <!-- Typography Controls -->
+        <!-- Typography & Appearance -->
         <div class="tool-dropdown">
-          <button id="btn-font-settings" class="icon-tool-btn" title="Appearance & Font">
+          <button id="btn-font-settings" class="icon-tool-btn" aria-label="Appearance & Font" title="Appearance & Font">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
           </button>
           <div id="font-popup" class="popover-menu hidden">
@@ -61,29 +61,34 @@
 
             <div class="popover-section">
               <span class="popover-title">FONT SIZE (<span id="font-size-val">19px</span>)</span>
-              <input type="range" id="font-size-slider" min="15" max="32" value="19" class="slider-input">
+              <input type="range" id="font-size-slider" min="15" max="32" value="19" class="slider-input" aria-label="Font Size">
             </div>
 
             <div class="popover-section">
               <span class="popover-title">THEME</span>
               <div class="theme-picker">
-                <button class="theme-circle-btn theme-dark active" data-theme="dark" title="Dark Indigo"></button>
-                <button class="theme-circle-btn theme-sepia" data-theme="sepia" title="Warm Sepia"></button>
-                <button class="theme-circle-btn theme-light" data-theme="light" title="Crisp White"></button>
-                <button class="theme-circle-btn theme-oled" data-theme="oled" title="Midnight Black"></button>
+                <button class="theme-circle-btn theme-dark active" data-theme="dark" aria-label="Dark Indigo Theme" title="Dark Indigo"></button>
+                <button class="theme-circle-btn theme-sepia" data-theme="sepia" aria-label="Warm Sepia Theme" title="Warm Sepia"></button>
+                <button class="theme-circle-btn theme-light" data-theme="light" aria-label="Crisp White Theme" title="Crisp White"></button>
+                <button class="theme-circle-btn theme-oled" data-theme="oled" aria-label="Midnight OLED Theme" title="Midnight Black"></button>
               </div>
             </div>
           </div>
         </div>
 
         <!-- File Upload / Import -->
-        <label class="icon-tool-btn upload-label" title="Import .txt or .md document">
+        <label class="icon-tool-btn upload-label" aria-label="Import document" title="Import .txt or .md document">
           <input type="file" id="file-uploader" accept=".txt,.md,.text" style="display:none;">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
         </label>
 
+        <!-- Export Document -->
+        <button id="btn-export-doc" class="icon-tool-btn" aria-label="Export Text Document" title="Export document">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </button>
+
         <!-- Load Sample Guide -->
-        <button id="btn-load-sample" class="secondary-pill-btn" title="Load sample article">Sample</button>
+        <button id="btn-load-sample" class="secondary-pill-btn" aria-label="Load demo text" title="Load sample article">Sample</button>
       </div>
     </header>
 
@@ -96,36 +101,40 @@
 
       <!-- Edit Mode: Distraction-free Textarea -->
       <div id="reader-editor-wrap" class="editor-wrap hidden">
-        <textarea id="text-editor" class="text-editor" placeholder="Paste your article, book chapter, essay, or study notes here..."></textarea>
+        <textarea id="text-editor" class="text-editor" aria-label="Article text editor" placeholder="Paste your article, book chapter, essay, or study notes here..."></textarea>
       </div>
     </main>
 
     <!-- Floating Dock Playback Bar (Speechify Iconic Dock) -->
     <div class="floating-dock">
       <!-- Scrub Bar -->
-      <div class="dock-scrub-track" id="dock-scrub">
+      <div class="dock-scrub-track" id="dock-scrub" title="Seek sentence">
         <div class="dock-scrub-fill" id="dock-scrub-fill"></div>
       </div>
 
       <div class="dock-content">
-        <!-- Left: Audio Status -->
+        <!-- Left: Audio Status & Waves -->
         <div class="dock-left">
-          <span class="status-indicator-dot"></span>
+          <div id="dock-eq" class="dock-equalizer" title="Audio Activity">
+            <span class="dock-wave-bar"></span>
+            <span class="dock-wave-bar"></span>
+            <span class="dock-wave-bar"></span>
+          </div>
           <span id="dock-sentence-status" class="sentence-status-text">Sentence 1 of 1</span>
         </div>
 
         <!-- Center: Core Controls -->
         <div class="dock-center">
-          <button id="btn-skip-prev" class="dock-btn" title="Previous sentence (Shortcut: Left Arrow)">
+          <button id="btn-skip-prev" class="dock-btn" aria-label="Previous sentence" title="Previous sentence (Shortcut: Left Arrow)">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
           </button>
           
-          <button id="btn-play-pause" class="dock-btn dock-btn-play" title="Play / Pause (Shortcut: Space)">
+          <button id="btn-play-pause" class="dock-btn dock-btn-play" aria-label="Play or Pause" title="Play / Pause (Shortcut: Space)">
             <svg id="dock-play-icon" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
             <svg id="dock-pause-icon" style="display:none;" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
           </button>
 
-          <button id="btn-skip-next" class="dock-btn" title="Next sentence (Shortcut: Right Arrow)">
+          <button id="btn-skip-next" class="dock-btn" aria-label="Next sentence" title="Next sentence (Shortcut: Right Arrow)">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
           </button>
         </div>
@@ -133,15 +142,15 @@
         <!-- Right: Speed, Voice, Voice Control -->
         <div class="dock-right">
           <!-- Voice Commands Mic Button -->
-          <button id="btn-mic-command" class="dock-tool-btn" title="Toggle voice commands ('play', 'pause', 'faster', 'next')">
+          <button id="btn-mic-command" class="dock-tool-btn" aria-label="Voice commands" title="Toggle voice commands ('play', 'pause', 'faster', 'next')">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
           </button>
 
           <!-- Speed Pill -->
-          <button id="btn-speed-pill" class="speed-pill" title="Click to cycle speed">1.0x</button>
+          <button id="btn-speed-pill" class="speed-pill" aria-label="Speed" title="Click to cycle speed">1.0x</button>
 
           <!-- Voice Selector -->
-          <select id="voice-picker" class="dock-voice-select" title="Select Voice"></select>
+          <select id="voice-picker" class="dock-voice-select" aria-label="Select voice" title="Select Voice"></select>
         </div>
       </div>
     </div>

@@ -12,7 +12,7 @@
   const state = {
     isPlaying: false,
     isPaused: false,
-    sentences: [], // Array of { text, node, range, startOffset, endOffset }
+    sentences: [], // Array of { text, element, offsetInElement }
     currentIndex: 0,
     currentUtterance: null,
     currentVoice: null,
@@ -22,7 +22,7 @@
     volume: 1.0,
     autoScroll: true,
     highlightWordColor: '#ffd54f',
-    highlightSentenceColor: 'rgba(99, 102, 241, 0.16)',
+    highlightSentenceColor: 'rgba(99, 102, 241, 0.18)',
     recognition: null,
     isListeningVoiceCommands: false,
     keepAliveInterval: null,
@@ -30,10 +30,9 @@
     selectionBubble: null
   };
 
-  // Speed preset ladder
-  const SPEEDS = [0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.5, 3.0];
+  const SPEEDS = [0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.5, 3.0];
 
-  // Initialize Extension
+  // Initialize
   async function init() {
     await loadSettings();
     initSpeechSynthesis();
@@ -43,7 +42,7 @@
     setupVoiceRecognition();
   }
 
-  // Load user settings from chrome.storage
+  // Load user settings
   async function loadSettings() {
     try {
       const data = await chrome.storage.sync.get({
@@ -53,7 +52,7 @@
         voiceURI: '',
         autoScroll: true,
         highlightWordColor: '#ffd54f',
-        highlightSentenceColor: 'rgba(99, 102, 241, 0.16)'
+        highlightSentenceColor: 'rgba(99, 102, 241, 0.18)'
       });
       state.speed = data.rate || 1.0;
       state.pitch = data.pitch || 1.0;
@@ -67,24 +66,23 @@
     }
   }
 
-  // Initialize SpeechSynthesis and populate voices
+  // Initialize speech voices
   function initSpeechSynthesis() {
-    if (!('speechSynthesis' in window)) {
-      console.error('[EchoRead] Web Speech API not supported in this browser.');
-      return;
-    }
+    if (!('speechSynthesis' in window)) return;
 
     function populateVoices() {
       state.availableVoices = window.speechSynthesis.getVoices();
       if (state.availableVoices.length > 0) {
-        // Find best match or default English voice
         if (state.savedVoiceURI) {
           state.currentVoice = state.availableVoices.find((v) => v.voiceURI === state.savedVoiceURI);
         }
         if (!state.currentVoice) {
-          // Prefer high quality English voices (Google, Natural, Samantha)
           state.currentVoice =
-            state.availableVoices.find((v) => v.lang.startsWith('en') && (v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('Samantha'))) ||
+            state.availableVoices.find(
+              (v) =>
+                v.lang.startsWith('en') &&
+                (v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('Samantha') || v.name.includes('Premium'))
+            ) ||
             state.availableVoices.find((v) => v.lang.startsWith('en')) ||
             state.availableVoices[0];
         }
@@ -98,7 +96,7 @@
     }
   }
 
-  // Set up Voice Command Recognition
+  // Voice Command Recognition
   function setupVoiceRecognition() {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) return;
@@ -114,7 +112,7 @@
         if (!lastResult.isFinal) return;
 
         const transcript = lastResult[0].transcript.trim().toLowerCase();
-        console.log('[EchoRead Voice Command Detected]:', transcript);
+        console.log('[EchoRead Voice Command]:', transcript);
         showToast(`🎙️ Command: "${transcript}"`);
 
         if (transcript.includes('play') || transcript.includes('start') || transcript.includes('resume')) {
@@ -133,9 +131,8 @@
       };
 
       state.recognition.onerror = (e) => {
-        console.warn('[EchoRead Recognition Error]:', e.error);
         if (e.error === 'not-allowed') {
-          showToast('Mic access denied for voice commands');
+          showToast('Mic access denied');
           toggleVoiceCommands(false);
         }
       };
@@ -148,13 +145,13 @@
         }
       };
     } catch (e) {
-      console.warn('[EchoRead] Voice recognition initialization failed:', e);
+      console.warn('[EchoRead] Recognition init warning:', e);
     }
   }
 
   function toggleVoiceCommands(forceState) {
     if (!state.recognition) {
-      showToast('Voice commands not supported in this browser tab');
+      showToast('Voice commands not supported in this tab');
       return;
     }
 
@@ -169,28 +166,28 @@
     if (shouldListen) {
       try {
         state.recognition.start();
-        showToast('🎙️ Voice control active: Say "pause", "play", "faster", "next"');
+        showToast('🎙️ Say: "pause", "play", "faster", "next"');
       } catch (err) {}
     } else {
       try {
         state.recognition.stop();
-        showToast('🎙️ Voice control disabled');
+        showToast('🎙️ Voice control stopped');
       } catch (err) {}
     }
   }
 
-  // Extract readable text chunks from web page
+  // Smart Article Content Extractor
   async function extractPageSentences() {
     const articleRoot =
       document.querySelector('article') ||
       document.querySelector('main') ||
-      document.querySelector('.post-content, .article-content, .entry-content') ||
+      document.querySelector('[role="main"]') ||
+      document.querySelector('.post-content, .article-content, .entry-content, #content') ||
       document.body;
 
     const candidateTags = ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'li', 'blockquote'];
     const elements = Array.from(articleRoot.querySelectorAll(candidateTags.join(','))).filter((el) => {
-      // Exclude hidden, header, footer, navigation, or extension UI
-      if (el.closest('#echoread-player-container, #echoread-selection-bubble, nav, footer, header, script, style, noscript')) return false;
+      if (el.closest('#echoread-player-container, #echoread-selection-bubble, nav, footer, header, script, style, noscript, aside')) return false;
       const text = el.innerText?.trim();
       const style = window.getComputedStyle(el);
       return text && text.length > 15 && style.display !== 'none' && style.visibility !== 'hidden';
@@ -198,23 +195,25 @@
 
     const parsedSentences = [];
 
-    // Batch process to prevent blocking main thread (chrome-extensions rule #6)
+    // Batch process to prevent blocking main thread
     const BATCH_SIZE = 25;
     for (let i = 0; i < elements.length; i += BATCH_SIZE) {
       const batch = elements.slice(i, i + BATCH_SIZE);
       await new Promise((resolve) =>
         requestAnimationFrame(() => {
           batch.forEach((el) => {
-            const rawText = el.innerText.trim();
-            // Split into natural sentences
-            const sentenceMatches = rawText.match(/[^.!?]+[.!?]+(\s|$)|[^.!?]+$/g);
+            const rawText = el.innerText;
+            // Split by sentence terminators (. ! ?) avoiding common abbreviations
+            const sentenceMatches = rawText.match(/[^.!?]+[.!?]+(?:\s|$)|[^.!?]+$/g);
             if (sentenceMatches) {
               sentenceMatches.forEach((s) => {
                 const clean = s.trim();
                 if (clean.length > 2) {
+                  const offset = rawText.indexOf(clean);
                   parsedSentences.push({
                     text: clean,
-                    element: el
+                    element: el,
+                    offsetInElement: Math.max(0, offset)
                   });
                 }
               });
@@ -231,9 +230,9 @@
     return parsedSentences;
   }
 
-  // Start reading full page
+  // Read full page
   async function readFullPage() {
-    showToast('📖 Analyzing page article text...');
+    showToast('📖 Analyzing article content...');
     const list = await extractPageSentences();
     if (!list || list.length === 0) {
       showToast('⚠️ No readable article content found.');
@@ -247,18 +246,19 @@
     playCurrentSentence();
   }
 
-  // Start reading specific text or selected text
+  // Read selection
   function readSelectedText(text) {
     if (!text || text.trim().length === 0) return;
 
     stopReading();
     const sentences = text
       .trim()
-      .match(/[^.!?]+[.!?]+(\s|$)|[^.!?]+$/g) || [text.trim()];
+      .match(/[^.!?]+[.!?]+(?:\s|$)|[^.!?]+$/g) || [text.trim()];
 
     state.sentences = sentences.map((s) => ({
       text: s.trim(),
-      element: null // Selection mode
+      element: null,
+      offsetInElement: 0
     }));
     state.currentIndex = 0;
 
@@ -266,7 +266,7 @@
     playCurrentSentence();
   }
 
-  // Speak current sentence and perform real-time word highlighting
+  // Playback & Dual-Modal Karaoke Highlight
   function playCurrentSentence() {
     if (state.currentIndex >= state.sentences.length) {
       stopReading();
@@ -277,10 +277,9 @@
     const item = state.sentences[state.currentIndex];
     const textToSpeak = item.text;
 
-    // Clear previous highlights
     clearAllHighlights();
 
-    // Sentence-level visual indicator
+    // Soft sentence highlight & auto-scroll
     if (item.element) {
       item.element.classList.add('echoread-active-sentence');
       if (state.autoScroll) {
@@ -298,11 +297,9 @@
     utterance.onboundary = (event) => {
       if (event.name === 'word') {
         const charIndex = event.charIndex;
-        // Determine word length (either provided by browser or computed to next space)
         let wordLength = event.charLength;
         if (!wordLength || wordLength === 0) {
-          const remaining = textToSpeak.substring(charIndex);
-          const match = remaining.match(/^\w+/);
+          const match = textToSpeak.substring(charIndex).match(/^\w+/);
           wordLength = match ? match[0].length : 4;
         }
 
@@ -320,7 +317,6 @@
 
     utterance.onend = () => {
       stopKeepAlive();
-      // Move to next sentence seamlessly
       state.currentIndex++;
       if (state.isPlaying) {
         playCurrentSentence();
@@ -338,29 +334,28 @@
     window.speechSynthesis.speak(utterance);
   }
 
-  // Highlight word in DOM using modern CSS Custom Highlight API with fallback
+  // Real-time Word Highlighting
   function highlightWordAtBoundary(item, charIndex, wordLength) {
     if (!item.element) {
-      // In text-only mode, highlight the floating player status
       updateCurrentWordInPlayer(item.text, charIndex, wordLength);
       return;
     }
 
     if ('highlights' in CSS) {
       try {
-        const range = findRangeForCharOffset(item.element, charIndex, wordLength);
+        const globalTargetStart = (item.offsetInElement || 0) + charIndex;
+        const range = findRangeForCharOffset(item.element, globalTargetStart, wordLength);
         if (range) {
           const highlight = new Highlight(range);
           CSS.highlights.set('echoread-word', highlight);
         }
         return;
-      } catch (err) {
-        // Fallback below
-      }
+      } catch (err) {}
     }
+
+    updateCurrentWordInPlayer(item.text, charIndex, wordLength);
   }
 
-  // Helper to locate exact DOM Range within an element based on character index
   function findRangeForCharOffset(element, targetStart, length) {
     const treeWalker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null);
     let currentOffset = 0;
@@ -387,15 +382,16 @@
     }
 
     if (startNode && endNode) {
-      const range = document.createRange();
-      range.setStart(startNode, startOffsetInNode);
-      range.setEnd(endNode, endOffsetInNode);
-      return range;
+      try {
+        const range = document.createRange();
+        range.setStart(startNode, startOffsetInNode);
+        range.setEnd(endNode, endOffsetInNode);
+        return range;
+      } catch (e) {}
     }
     return null;
   }
 
-  // Clear all highlights
   function clearAllHighlights() {
     if ('highlights' in CSS) {
       CSS.highlights.delete('echoread-word');
@@ -406,7 +402,7 @@
     });
   }
 
-  // SpeechSynthesis keep-alive to circumvent Chromium 15-second timeout quirk
+  // Keep-alive heartbeat for Chrome speech synthesis
   function startKeepAlive() {
     stopKeepAlive();
     state.keepAliveInterval = setInterval(() => {
@@ -424,7 +420,7 @@
     }
   }
 
-  // Playback Controls
+  // Playback Control Handlers
   function togglePlay() {
     if (state.isPlaying && !state.isPaused) {
       pauseReading();
@@ -457,7 +453,7 @@
       state.isPaused = false;
       updatePlayerUI();
       notifyServiceWorker('playing');
-      showToast('▶ Resumed');
+      showToast('▶ Playing');
     } else {
       togglePlay();
     }
@@ -491,7 +487,7 @@
 
   function changeSpeed(step) {
     let currIdx = SPEEDS.indexOf(state.speed);
-    if (currIdx === -1) currIdx = 1;
+    if (currIdx === -1) currIdx = 2;
     let nextIdx = currIdx + step;
     if (nextIdx >= SPEEDS.length) nextIdx = 0;
     if (nextIdx < 0) nextIdx = SPEEDS.length - 1;
@@ -503,16 +499,15 @@
     state.speed = newSpeed;
     chrome.storage.sync.set({ rate: newSpeed });
     updatePlayerUI();
-    showToast(`⚡ Speed: ${newSpeed}x`);
+    showToast(`Speed: ${newSpeed}x`);
 
-    // If currently speaking, restart current sentence with updated rate
     if (state.isPlaying && !state.isPaused) {
       window.speechSynthesis.cancel();
       playCurrentSentence();
     }
   }
 
-  // Floating Player DOM construction
+  // Build Floating Player Dock
   function createFloatingPlayer() {
     if (document.getElementById('echoread-player-container')) return;
 
@@ -524,52 +519,56 @@
       <div class="echoread-player-card">
         <div class="echoread-bar-top">
           <div class="echoread-brand-group">
-            <span class="echoread-logo-dot"></span>
+            <div id="echoread-eq" class="echoread-equalizer" title="Audio Activity">
+              <div class="echoread-wave-bar"></div>
+              <div class="echoread-wave-bar"></div>
+              <div class="echoread-wave-bar"></div>
+            </div>
             <span class="echoread-brand-name">EchoRead AI</span>
             <span id="echoread-progress-count" class="echoread-progress-text">Sentence 1/1</span>
           </div>
           <div class="echoread-window-actions">
-            <button id="echoread-btn-fullscreen" class="echoread-icon-btn" title="Open full reader web app">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+            <button id="echoread-btn-fullscreen" class="echoread-icon-btn" aria-label="Open Fullscreen Reader Tab" title="Open Fullscreen Reader">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
             </button>
-            <button id="echoread-btn-minimize" class="echoread-icon-btn" title="Minimize player">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"/></svg>
+            <button id="echoread-btn-minimize" class="echoread-icon-btn" aria-label="Minimize player" title="Minimize">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"/></svg>
             </button>
-            <button id="echoread-btn-close" class="echoread-icon-btn" title="Close and stop">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            <button id="echoread-btn-close" class="echoread-icon-btn" aria-label="Close and stop" title="Close">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
             </button>
           </div>
         </div>
 
-        <div id="echoread-progress-bar" class="echoread-progress-track">
+        <div id="echoread-progress-bar" class="echoread-progress-track" title="Click to seek sentence">
           <div id="echoread-progress-fill" class="echoread-progress-fill"></div>
         </div>
 
         <div class="echoread-controls-row">
           <div class="echoread-playback-group">
-            <button id="echoread-btn-prev" class="echoread-control-btn" title="Previous sentence">
+            <button id="echoread-btn-prev" class="echoread-control-btn" aria-label="Previous sentence" title="Previous sentence">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
             </button>
-            <button id="echoread-btn-play-pause" class="echoread-control-btn echoread-play-pause-btn" title="Play / Pause">
-              <svg id="echoread-icon-play" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-              <svg id="echoread-icon-pause" style="display:none;" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+            <button id="echoread-btn-play-pause" class="echoread-control-btn echoread-play-pause-btn" aria-label="Play or Pause" title="Play / Pause">
+              <svg id="echoread-icon-play" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+              <svg id="echoread-icon-pause" style="display:none;" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
             </button>
-            <button id="echoread-btn-next" class="echoread-control-btn" title="Next sentence">
+            <button id="echoread-btn-next" class="echoread-control-btn" aria-label="Next sentence" title="Next sentence">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
             </button>
           </div>
 
           <div class="echoread-settings-group">
-            <button id="echoread-speed-toggle" class="echoread-speed-btn" title="Click to cycle speed">1.0x</button>
-            <select id="echoread-voice-picker" class="echoread-voice-select" title="Choose voice"></select>
-            <button id="echoread-mic-toggle" class="echoread-mic-btn" title="Toggle voice command recognition">
+            <button id="echoread-speed-toggle" class="echoread-speed-btn" aria-label="Change Speed" title="Click to cycle speed">1.0x</button>
+            <select id="echoread-voice-picker" class="echoread-voice-select" aria-label="Select voice" title="Choose voice"></select>
+            <button id="echoread-mic-toggle" class="echoread-mic-btn" aria-label="Voice commands" title="Toggle voice command recognition">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
             </button>
           </div>
         </div>
       </div>
 
-      <div id="echoread-mini-bubble" class="echoread-mini-bubble" title="Click to expand EchoRead">
+      <div id="echoread-mini-bubble" class="echoread-mini-bubble" aria-label="Expand EchoRead player" title="Click to expand EchoRead">
         <svg width="26" height="26" viewBox="0 0 24 24" fill="white"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
       </div>
     `;
@@ -577,7 +576,7 @@
     document.documentElement.appendChild(container);
     state.playerElement = container;
 
-    // Attach Event Listeners
+    // Attach listeners
     document.getElementById('echoread-btn-play-pause').addEventListener('click', togglePlay);
     document.getElementById('echoread-btn-prev').addEventListener('click', skipPrev);
     document.getElementById('echoread-btn-next').addEventListener('click', skipNext);
@@ -587,7 +586,7 @@
       const selectedURI = e.target.value;
       state.currentVoice = state.availableVoices.find((v) => v.voiceURI === selectedURI);
       chrome.storage.sync.set({ voiceURI: selectedURI });
-      showToast(`Voice changed: ${state.currentVoice ? state.currentVoice.name : 'Default'}`);
+      showToast(`Voice: ${state.currentVoice ? state.currentVoice.name : 'Default'}`);
       if (state.isPlaying && !state.isPaused) {
         window.speechSynthesis.cancel();
         playCurrentSentence();
@@ -614,7 +613,7 @@
       container.style.display = 'none';
     });
 
-    // Progress bar seeking
+    // Seek via progress bar
     const progressBar = document.getElementById('echoread-progress-bar');
     progressBar.addEventListener('click', (e) => {
       if (state.sentences.length === 0) return;
@@ -642,15 +641,17 @@
     const speedBtn = document.getElementById('echoread-speed-toggle');
     const countText = document.getElementById('echoread-progress-count');
     const fillBar = document.getElementById('echoread-progress-fill');
+    const eq = document.getElementById('echoread-eq');
+
+    const activePlay = state.isPlaying && !state.isPaused;
 
     if (playIcon && pauseIcon) {
-      if (state.isPlaying && !state.isPaused) {
-        playIcon.style.display = 'none';
-        pauseIcon.style.display = 'block';
-      } else {
-        playIcon.style.display = 'block';
-        pauseIcon.style.display = 'none';
-      }
+      playIcon.style.display = activePlay ? 'none' : 'block';
+      pauseIcon.style.display = activePlay ? 'block' : 'none';
+    }
+
+    if (eq) {
+      eq.classList.toggle('playing', activePlay);
     }
 
     if (speedBtn) speedBtn.textContent = `${state.speed}x`;
@@ -691,7 +692,7 @@
     }
   }
 
-  // Floating Selection Tooltip ("🔊 Listen")
+  // Floating Selection Tooltip
   function createSelectionBubble() {
     if (document.getElementById('echoread-selection-bubble')) return;
 
@@ -720,7 +721,6 @@
 
   function setupSelectionListener() {
     document.addEventListener('mouseup', (e) => {
-      // Don't trigger if clicked inside our own player
       if (e.target.closest('#echoread-player-container, #echoread-selection-bubble')) return;
 
       setTimeout(() => {
@@ -736,7 +736,7 @@
         } else {
           hideSelectionBubble();
         }
-      }, 50);
+      }, 60);
     });
 
     document.addEventListener('mousedown', (e) => {
@@ -759,7 +759,7 @@
     }
   }
 
-  // Visual Injected Toast
+  // Toast
   function showToast(message) {
     let toast = document.getElementById('echoread-toast');
     if (!toast) {
@@ -777,7 +777,6 @@
     }, 2800);
   }
 
-  // Notify Background Worker of playback state
   function notifyServiceWorker(status) {
     try {
       chrome.runtime.sendMessage({
@@ -787,7 +786,7 @@
     } catch (e) {}
   }
 
-  // Chrome Message Listener from Background Worker or Popup
+  // Messaging from Background or Popup
   chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     (async () => {
       try {
@@ -822,13 +821,12 @@
           sendResponse({ received: true });
         }
       } catch (err) {
-        console.error('[EchoRead Content Script Error]:', err);
+        console.error('[EchoRead Error]:', err);
         sendResponse({ error: err.message });
       }
     })();
-    return true; // Keep channel open
+    return true;
   });
 
-  // Start initialization
   init();
 })();

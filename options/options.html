@@ -17,7 +17,10 @@
           <p>Customize your voice reading, word highlights, and controls</p>
         </div>
       </div>
-      <button id="btn-save" class="save-btn">Save Changes</button>
+      <div class="header-buttons">
+        <button id="btn-reset" class="reset-btn" aria-label="Reset all settings to default">Reset Defaults</button>
+        <button id="btn-save" class="save-btn" aria-label="Save Settings">Save Changes</button>
+      </div>
     </header>
 
     <div class="settings-grid">
@@ -28,8 +31,8 @@
         <div class="setting-item">
           <label for="opt-voice">Preferred Voice</label>
           <div class="inline-group">
-            <select id="opt-voice" class="form-select"></select>
-            <button id="opt-btn-test-voice" class="test-btn">Test</button>
+            <select id="opt-voice" class="form-select" aria-label="Preferred voice"></select>
+            <button id="opt-btn-test-voice" class="test-btn" aria-label="Test audio sample">Test</button>
           </div>
           <span class="help-text">Choose from your system and browser's natural speech synthesizers.</span>
         </div>
@@ -39,7 +42,7 @@
             <label for="opt-rate">Default Speed</label>
             <span id="rate-value" class="value-tag">1.0x</span>
           </div>
-          <input type="range" id="opt-rate" min="0.5" max="3.0" step="0.25" value="1.0" class="range-slider">
+          <input type="range" id="opt-rate" min="0.5" max="3.0" step="0.25" value="1.0" class="range-slider" aria-label="Default reading speed">
         </div>
 
         <div class="setting-item">
@@ -47,7 +50,7 @@
             <label for="opt-pitch">Voice Pitch</label>
             <span id="pitch-value" class="value-tag">1.0</span>
           </div>
-          <input type="range" id="opt-pitch" min="0.5" max="1.5" step="0.1" value="1.0" class="range-slider">
+          <input type="range" id="opt-pitch" min="0.5" max="1.5" step="0.1" value="1.0" class="range-slider" aria-label="Voice pitch">
         </div>
       </section>
 
@@ -58,7 +61,7 @@
         <div class="setting-item">
           <label for="opt-word-color">Word Highlight Color</label>
           <div class="inline-group">
-            <input type="color" id="opt-word-color" value="#ffd54f" class="color-picker">
+            <input type="color" id="opt-word-color" value="#ffd54f" class="color-picker" aria-label="Word highlight color">
             <span id="word-color-hex" class="hex-text">#ffd54f</span>
           </div>
           <span class="help-text">The color of the current active spoken word.</span>
@@ -67,7 +70,7 @@
         <div class="setting-item">
           <label for="opt-sentence-color">Sentence Highlight Background</label>
           <div class="inline-group">
-            <input type="color" id="opt-sentence-color" value="#6366f1" class="color-picker">
+            <input type="color" id="opt-sentence-color" value="#6366f1" class="color-picker" aria-label="Sentence highlight color">
             <span id="sentence-color-hex" class="hex-text">#6366f1</span>
           </div>
           <span class="help-text">Background illumination applied to the current sentence.</span>
@@ -92,7 +95,7 @@
             <span class="help-text">Smoothly scrolls the browser window to keep the spoken sentence centered.</span>
           </div>
           <label class="switch">
-            <input type="checkbox" id="opt-autoscroll" checked>
+            <input type="checkbox" id="opt-autoscroll" checked aria-label="Toggle auto-scroll">
             <span class="slider round"></span>
           </label>
         </div>
@@ -103,7 +106,7 @@
             <span class="help-text">Shows a floating button right above any selected text on web pages.</span>
           </div>
           <label class="switch">
-            <input type="checkbox" id="opt-selection-bubble" checked>
+            <input type="checkbox" id="opt-selection-bubble" checked aria-label="Toggle selection tooltip">
             <span class="slider round"></span>
           </label>
         </div>
@@ -114,7 +117,7 @@
             <span class="help-text">Allow controlling reading via microphone ("play", "pause", "faster", "next").</span>
           </div>
           <label class="switch">
-            <input type="checkbox" id="opt-voice-commands" checked>
+            <input type="checkbox" id="opt-voice-commands" checked aria-label="Toggle voice commands">
             <span class="slider round"></span>
           </label>
         </div>

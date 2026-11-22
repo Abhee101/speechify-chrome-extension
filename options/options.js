@@ -3,6 +3,18 @@
 document.addEventListener('DOMContentLoaded', async () => {
   let availableVoices = [];
 
+  const DEFAULTS = {
+    voiceURI: '',
+    rate: 1.0,
+    pitch: 1.0,
+    volume: 1.0,
+    autoScroll: true,
+    showSelectionButton: true,
+    voiceCommandsEnabled: true,
+    highlightWordColor: '#ffd54f',
+    highlightSentenceColor: '#6366f1'
+  };
+
   // DOM elements
   const optVoice = document.getElementById('opt-voice');
   const optBtnTestVoice = document.getElementById('opt-btn-test-voice');
@@ -20,20 +32,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   const optSelectionBubble = document.getElementById('opt-selection-bubble');
   const optVoiceCommands = document.getElementById('opt-voice-commands');
   const btnSave = document.getElementById('btn-save');
+  const btnReset = document.getElementById('btn-reset');
   const saveToast = document.getElementById('save-toast');
 
   // Load Settings
-  const settings = await chrome.storage.sync.get({
-    voiceURI: '',
-    rate: 1.0,
-    pitch: 1.0,
-    volume: 1.0,
-    autoScroll: true,
-    showSelectionButton: true,
-    voiceCommandsEnabled: true,
-    highlightWordColor: '#ffd54f',
-    highlightSentenceColor: '#6366f1'
-  });
+  const settings = await chrome.storage.sync.get(DEFAULTS);
 
   // Populate Voice List
   function loadVoices() {
@@ -64,21 +67,24 @@ document.addEventListener('DOMContentLoaded', async () => {
     window.speechSynthesis.onvoiceschanged = loadVoices;
   }
 
-  // Set Inputs
-  optRate.value = settings.rate;
-  rateValue.textContent = `${settings.rate}x`;
-  optPitch.value = settings.pitch;
-  pitchValue.textContent = settings.pitch;
-  optAutoscroll.checked = settings.autoScroll;
-  optSelectionBubble.checked = settings.showSelectionButton;
-  optVoiceCommands.checked = settings.voiceCommandsEnabled;
+  function applySettingsToUI(cfg) {
+    optRate.value = cfg.rate;
+    rateValue.textContent = `${cfg.rate}x`;
+    optPitch.value = cfg.pitch;
+    pitchValue.textContent = cfg.pitch;
+    optAutoscroll.checked = cfg.autoScroll !== false;
+    optSelectionBubble.checked = cfg.showSelectionButton !== false;
+    optVoiceCommands.checked = cfg.voiceCommandsEnabled !== false;
 
-  optWordColor.value = settings.highlightWordColor || '#ffd54f';
-  wordColorHex.textContent = optWordColor.value;
-  optSentenceColor.value = settings.highlightSentenceColor.startsWith('#') ? settings.highlightSentenceColor : '#6366f1';
-  sentenceColorHex.textContent = optSentenceColor.value;
+    optWordColor.value = cfg.highlightWordColor || '#ffd54f';
+    wordColorHex.textContent = optWordColor.value;
+    optSentenceColor.value = cfg.highlightSentenceColor.startsWith('#') ? cfg.highlightSentenceColor : '#6366f1';
+    sentenceColorHex.textContent = optSentenceColor.value;
 
-  updatePreview();
+    updatePreview();
+  }
+
+  applySettingsToUI(settings);
 
   // Range Listeners
   optRate.addEventListener('input', () => {
@@ -102,8 +108,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   function updatePreview() {
     previewWord.style.backgroundColor = optWordColor.value;
-    // sentence background with alpha
-    previewSentence.style.backgroundColor = hexToRgba(optSentenceColor.value, 0.2);
+    previewSentence.style.backgroundColor = hexToRgba(optSentenceColor.value, 0.18);
   }
 
   function hexToRgba(hex, alpha) {
@@ -138,9 +143,21 @@ document.addEventListener('DOMContentLoaded', async () => {
       highlightSentenceColor: hexToRgba(optSentenceColor.value, 0.18)
     });
 
+    showSaveToast('Settings saved successfully!');
+  });
+
+  // Reset to Defaults
+  btnReset.addEventListener('click', async () => {
+    await chrome.storage.sync.set(DEFAULTS);
+    applySettingsToUI(DEFAULTS);
+    showSaveToast('Reset to default settings!');
+  });
+
+  function showSaveToast(msg) {
+    saveToast.textContent = msg;
     saveToast.classList.add('visible');
     setTimeout(() => {
       saveToast.classList.remove('visible');
     }, 2500);
-  });
+  }
 });

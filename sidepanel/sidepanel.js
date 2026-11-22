@@ -1,5 +1,5 @@
 // EchoRead AI - Side Panel Script
-// Provides synchronized transcript reader side-by-side with any webpage
+// Synchronized transcript reader side-by-side with web pages
 
 document.addEventListener('DOMContentLoaded', async () => {
   // State
@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   let speed = 1.0;
   let availableVoices = [];
   let currentVoice = null;
-  const SPEEDS = [0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.5, 3.0];
+  const SPEEDS = [0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.5, 3.0];
 
   // DOM elements
   const pageTitleEl = document.getElementById('panel-page-title');
@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const btnOpenTab = document.getElementById('btn-open-tab');
   const btnExtractRead = document.getElementById('btn-extract-read');
   const transcriptEl = document.getElementById('panel-transcript');
+  const searchInput = document.getElementById('panel-search-input');
   const btnClearTranscript = document.getElementById('btn-clear-transcript');
   const btnPlay = document.getElementById('panel-btn-play');
   const playIcon = document.getElementById('panel-play-icon');
@@ -95,10 +96,28 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   await refreshActiveTab();
 
-  // Extract Page Content
+  // Extract Content
   async function extractContent() {
     await refreshActiveTab();
     if (!activeTab || !activeTab.id) return;
+
+    if (activeTab.url && (activeTab.url.startsWith('chrome://') || activeTab.url.includes('chrome.google.com/webstore'))) {
+      pageTitleEl.textContent = 'Restricted Chrome Page';
+      transcriptEl.innerHTML = `
+        <div class="empty-state">
+          <p>Chrome restricts content scripts on internal browser pages.</p>
+          <span>Open any website (such as Wikipedia, Medium, or news) to extract text, or open our Fullscreen Reader below!</span>
+          <button id="btn-goto-reader" class="panel-primary-btn" style="margin-top:12px; max-width:200px;">Open Reader</button>
+        </div>
+      `;
+      const gotoBtn = document.getElementById('btn-goto-reader');
+      if (gotoBtn) {
+        gotoBtn.addEventListener('click', () => {
+          chrome.tabs.create({ url: chrome.runtime.getURL('reader/reader.html') });
+        });
+      }
+      return;
+    }
 
     pageTitleEl.textContent = 'Extracting article...';
     try {
@@ -106,7 +125,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       try {
         resp = await chrome.tabs.sendMessage(activeTab.id, { action: 'get-page-text' });
       } catch (err) {
-        // Fallback: inject content script
         await chrome.scripting.executeScript({
           target: { tabId: activeTab.id },
           files: ['content/content-script.js']
@@ -115,12 +133,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         resp = await chrome.tabs.sendMessage(activeTab.id, { action: 'get-page-text' });
       }
 
-      if (resp && resp.text) {
+      if (resp && resp.text && resp.text.trim().length > 0) {
         pageTitleEl.textContent = resp.title || activeTab.title;
         loadTextIntoTranscript(resp.text);
         startReading();
       } else {
-        pageTitleEl.textContent = 'No text extracted. Try another page.';
+        pageTitleEl.textContent = 'No article text found on this page.';
+        transcriptEl.innerHTML = '<div class="empty-state"><p>No text found.</p><span>Try scrolling into the article or selecting text directly.</span></div>';
       }
     } catch (e) {
       console.error('[SidePanel Extract Error]:', e);
@@ -131,12 +150,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   btnExtractRead.addEventListener('click', extractContent);
   btnSyncPage.addEventListener('click', extractContent);
 
-  // Parse and Load Text
+  // Load text into interactive transcript
   function loadTextIntoTranscript(rawText) {
     stopReading();
     transcriptEl.innerHTML = '';
 
-    const matches = rawText.match(/[^.!?]+[.!?]+(\s|$)|[^.!?]+$/g) || [rawText];
+    const matches = rawText.match(/[^.!?]+[.!?]+(?:\s|$)|[^.!?]+$/g) || [rawText];
     sentences = matches.map((s) => s.trim()).filter((s) => s.length > 2);
 
     if (sentences.length === 0) {
@@ -150,7 +169,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       span.dataset.index = idx;
       span.textContent = s + ' ';
 
-      // Click to jump reading directly to this sentence
       span.addEventListener('click', () => {
         window.speechSynthesis.cancel();
         currentIndex = idx;
@@ -163,6 +181,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     currentIndex = 0;
     updateProgressUI();
   }
+
+  // Search filter
+  searchInput.addEventListener('input', () => {
+    const query = searchInput.value.trim().toLowerCase();
+    const spans = transcriptEl.querySelectorAll('.transcript-sentence');
+    spans.forEach((span) => {
+      if (!query) {
+        span.classList.remove('matched');
+      } else {
+        const text = span.textContent.toLowerCase();
+        span.classList.toggle('matched', text.includes(query));
+      }
+    });
+  });
 
   // Playback Engine
   function startReading() {
@@ -186,7 +218,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (currentVoice) utterance.voice = currentVoice;
     utterance.rate = speed;
 
-    // Real-time word highlighting in transcript
     utterance.onboundary = (event) => {
       if (event.name === 'word') {
         const charIndex = event.charIndex;
@@ -226,7 +257,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const all = transcriptEl.querySelectorAll('.transcript-sentence');
     all.forEach((el) => {
       el.classList.remove('active');
-      // restore clean text without temporary inner tags
       const original = sentences[el.dataset.index];
       if (original) el.textContent = original + ' ';
     });
@@ -323,7 +353,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Speed Cycle
   btnSpeed.addEventListener('click', async () => {
     let curr = SPEEDS.indexOf(speed);
-    if (curr === -1) curr = 1;
+    if (curr === -1) curr = 2;
     curr = (curr + 1) % SPEEDS.length;
     speed = SPEEDS[curr];
     btnSpeed.textContent = `${speed}x`;
@@ -350,5 +380,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     const raw = sentences.join('\n\n');
     const query = raw ? `?text=${encodeURIComponent(raw)}` : '';
     await chrome.tabs.create({ url: chrome.runtime.getURL(`reader/reader.html${query}`) });
+  });
+
+  // Keyboard shortcut Spacebar
+  document.addEventListener('keydown', (e) => {
+    if (e.target === searchInput) return;
+    if (e.code === 'Space') {
+      e.preventDefault();
+      togglePlay();
+    }
   });
 });

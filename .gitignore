@@ -21,3 +21,7 @@ build/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Impeccable Local Cache
+.impeccable/*.cache.json
+.impeccable/config.local.json

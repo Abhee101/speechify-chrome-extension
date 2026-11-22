@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // App State
   const state = {
-    paragraphs: [], // Array of sentence arrays
+    paragraphs: [],
     flatSentences: [],
     currentIndex: 0,
     isPlaying: false,
@@ -62,7 +62,9 @@ Experience the freedom of listening at your own pace, from 1x up to 3x speed. Ha
   const fontSizeSlider = document.getElementById('font-size-slider');
   const fontSizeVal = document.getElementById('font-size-val');
   const fileUploader = document.getElementById('file-uploader');
+  const btnExportDoc = document.getElementById('btn-export-doc');
   const btnLoadSample = document.getElementById('btn-load-sample');
+  const dockEq = document.getElementById('dock-eq');
 
   // 1. Initialize Settings
   await initSettings();
@@ -70,7 +72,7 @@ Experience the freedom of listening at your own pace, from 1x up to 3x speed. Ha
   initVoiceCommands();
   checkURLParamsOrSample();
 
-  // Load preferences from storage
+  // Load preferences
   async function initSettings() {
     try {
       let saved = {};
@@ -149,12 +151,18 @@ Experience the freedom of listening at your own pace, from 1x up to 3x speed. Ha
     });
   }
 
-  // Check URL parameters for text payload
+  // Check URL parameters or cached text
   function checkURLParamsOrSample() {
     const params = new URLSearchParams(window.location.search);
     const passedText = params.get('text');
     if (passedText) {
       loadText(decodeURIComponent(passedText));
+      return;
+    }
+
+    const cached = localStorage.getItem('echoread_cached_text');
+    if (cached && cached.trim().length > 10) {
+      loadText(cached);
     } else {
       loadText(SAMPLE_TEXT);
     }
@@ -163,6 +171,7 @@ Experience the freedom of listening at your own pace, from 1x up to 3x speed. Ha
   // Load and Parse Text
   function loadText(raw) {
     textEditor.value = raw;
+    localStorage.setItem('echoread_cached_text', raw);
     parseAndRenderText(raw);
   }
 
@@ -179,7 +188,7 @@ Experience the freedom of listening at your own pace, from 1x up to 3x speed. Ha
       const pEl = document.createElement('p');
       pEl.className = 'reader-paragraph';
 
-      const sMatches = pText.match(/[^.!?]+[.!?]+(\s|$)|[^.!?]+$/g) || [pText];
+      const sMatches = pText.match(/[^.!?]+[.!?]+(?:\s|$)|[^.!?]+$/g) || [pText];
       const pSentences = [];
 
       sMatches.forEach((s) => {
@@ -216,8 +225,6 @@ Experience the freedom of listening at your own pace, from 1x up to 3x speed. Ha
   function updateStats(text) {
     const words = text.trim().split(/\s+/).filter(Boolean).length;
     statWords.textContent = `${words} words`;
-
-    // Standard reading speed is ~200 WPM, audio speed adjusts listening time
     const minutes = Math.max(1, Math.round(words / (180 * state.speed)));
     statTime.textContent = `${minutes} min listen`;
   }
@@ -288,7 +295,7 @@ Experience the freedom of listening at your own pace, from 1x up to 3x speed. Ha
     utterance.pitch = state.pitch;
     utterance.volume = state.volume;
 
-    // Real-time word highlighting
+    // Real-time word boundary highlight
     utterance.onboundary = (event) => {
       if (event.name === 'word') {
         const charIndex = event.charIndex;
@@ -362,12 +369,13 @@ Experience the freedom of listening at your own pace, from 1x up to 3x speed. Ha
   }
 
   function updateDockPlayState() {
-    if (state.isPlaying && !state.isPaused) {
-      playIcon.style.display = 'none';
-      pauseIcon.style.display = 'block';
-    } else {
-      playIcon.style.display = 'block';
-      pauseIcon.style.display = 'none';
+    const isActivelySpeaking = state.isPlaying && !state.isPaused;
+    if (playIcon && pauseIcon) {
+      playIcon.style.display = isActivelySpeaking ? 'none' : 'block';
+      pauseIcon.style.display = isActivelySpeaking ? 'block' : 'none';
+    }
+    if (dockEq) {
+      dockEq.classList.toggle('playing', isActivelySpeaking);
     }
   }
 
@@ -482,7 +490,7 @@ Experience the freedom of listening at your own pace, from 1x up to 3x speed. Ha
         }
       };
     } catch (e) {
-      console.warn('Voice command init warning:', e);
+      console.warn('Voice command warning:', e);
     }
   }
 
@@ -499,7 +507,7 @@ Experience the freedom of listening at your own pace, from 1x up to 3x speed. Ha
     if (nextState) {
       try {
         state.recognition.start();
-        showToast('🎙️ Voice active: Say "pause", "play", "faster", "next"');
+        showToast('🎙️ Say: "pause", "play", "faster", "next"');
       } catch (e) {}
     } else {
       try {
@@ -517,7 +525,7 @@ Experience the freedom of listening at your own pace, from 1x up to 3x speed. Ha
     btnViewEdit.classList.remove('active');
     editorWrap.classList.add('hidden');
     readerDisplay.style.display = 'block';
-    parseAndRenderText(textEditor.value);
+    loadText(textEditor.value);
   });
 
   btnViewEdit.addEventListener('click', () => {
@@ -527,6 +535,11 @@ Experience the freedom of listening at your own pace, from 1x up to 3x speed. Ha
     readerDisplay.style.display = 'none';
     editorWrap.classList.remove('hidden');
     textEditor.focus();
+  });
+
+  textEditor.addEventListener('input', () => {
+    localStorage.setItem('echoread_cached_text', textEditor.value);
+    updateStats(textEditor.value);
   });
 
   // Appearance & Themes
@@ -596,6 +609,23 @@ Experience the freedom of listening at your own pace, from 1x up to 3x speed. Ha
     reader.readAsText(file);
   });
 
+  // Export Document as .txt
+  if (btnExportDoc) {
+    btnExportDoc.addEventListener('click', () => {
+      const text = textEditor.value || SAMPLE_TEXT;
+      const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'EchoRead-Article.txt';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('📥 Document exported as text file');
+    });
+  }
+
   btnLoadSample.addEventListener('click', () => {
     loadText(SAMPLE_TEXT);
     btnViewRead.click();
@@ -609,7 +639,6 @@ Experience the freedom of listening at your own pace, from 1x up to 3x speed. Ha
 
   // Keyboard Shortcuts
   document.addEventListener('keydown', (e) => {
-    // Don't hijack if user is typing in editor
     if (e.target === textEditor) return;
 
     if (e.code === 'Space') {
@@ -624,7 +653,7 @@ Experience the freedom of listening at your own pace, from 1x up to 3x speed. Ha
     }
   });
 
-  // Chrome keep-alive
+  // Keep-alive heartbeat
   function startKeepAlive() {
     stopKeepAlive();
     state.keepAliveTimer = setInterval(() => {

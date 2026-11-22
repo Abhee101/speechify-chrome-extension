@@ -20,10 +20,10 @@
         </div>
       </div>
       <div class="header-actions">
-        <button id="btn-sidepanel" class="icon-action-btn" title="Open in Chrome Side Panel">
+        <button id="btn-sidepanel" class="icon-action-btn" aria-label="Open in Chrome Side Panel" title="Open in Chrome Side Panel">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M15 3v18"/></svg>
         </button>
-        <button id="btn-options" class="icon-action-btn" title="Settings">
+        <button id="btn-options" class="icon-action-btn" aria-label="Settings" title="Settings">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
         </button>
       </div>
@@ -33,14 +33,14 @@
     <div class="hero-card">
       <div class="hero-info">
         <span class="hero-label">CURRENT TAB</span>
-        <h2 id="tab-title" class="tab-title">Loading page...</h2>
+        <h2 id="tab-title" class="tab-title" title="Loading page...">Loading page...</h2>
       </div>
       <div class="hero-buttons">
         <button id="btn-read-page" class="primary-btn">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-          <span>Read Page Aloud</span>
+          <span id="read-btn-text">Read Page Aloud</span>
         </button>
-        <button id="btn-stop-reading" class="secondary-btn" title="Stop Reading">
+        <button id="btn-stop-reading" class="secondary-btn" aria-label="Stop Reading" title="Stop Reading">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
         </button>
       </div>
@@ -51,8 +51,8 @@
       <div class="control-group">
         <label for="voice-select" class="control-label">Voice</label>
         <div class="select-row">
-          <select id="voice-select" class="custom-select"></select>
-          <button id="btn-test-voice" class="tiny-btn" title="Preview voice sample">Test</button>
+          <select id="voice-select" class="custom-select" aria-label="Select voice"></select>
+          <button id="btn-test-voice" class="tiny-btn" aria-label="Test voice sample" title="Preview voice sample">Test</button>
         </div>
       </div>
 
@@ -62,11 +62,11 @@
           <span id="speed-display" class="value-badge">1.0x</span>
         </div>
         <div class="speed-chips">
-          <button class="chip-btn" data-speed="0.75">0.75x</button>
-          <button class="chip-btn active" data-speed="1.0">1.0x</button>
-          <button class="chip-btn" data-speed="1.25">1.25x</button>
-          <button class="chip-btn" data-speed="1.5">1.5x</button>
-          <button class="chip-btn" data-speed="2.0">2.0x</button>
+          <button class="chip-btn" data-speed="0.75" aria-label="0.75x speed">0.75x</button>
+          <button class="chip-btn active" data-speed="1.0" aria-label="1.0x speed">1.0x</button>
+          <button class="chip-btn" data-speed="1.25" aria-label="1.25x speed">1.25x</button>
+          <button class="chip-btn" data-speed="1.5" aria-label="1.5x speed">1.5x</button>
+          <button class="chip-btn" data-speed="2.0" aria-label="2.0x speed">2.0x</button>
         </div>
       </div>
     </div>
@@ -75,9 +75,9 @@
     <div class="section-card">
       <div class="label-row">
         <span class="control-label">Instant Text Reader</span>
-        <button id="btn-clear-text" class="link-btn">Clear</button>
+        <button id="btn-clear-text" class="link-btn" aria-label="Clear text">Clear</button>
       </div>
-      <textarea id="quick-text" class="quick-textarea" placeholder="Paste or type any snippet here to read immediately..."></textarea>
+      <textarea id="quick-text" class="quick-textarea" aria-label="Quick text input" placeholder="Paste or type any snippet here to read immediately..."></textarea>
       <button id="btn-read-quick-text" class="action-btn">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
         <span>Speak Text</span>
@@ -85,7 +85,7 @@
     </div>
 
     <!-- Full Reader Launcher Banner -->
-    <button id="btn-open-full-reader" class="banner-btn">
+    <button id="btn-open-full-reader" class="banner-btn" aria-label="Launch Full Reader App">
       <div class="banner-content">
         <span class="banner-title">🚀 Launch Full Reader App</span>
         <span class="banner-desc">Upload PDFs, book view, dyslexia font & distraction-free reading</span>

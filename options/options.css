@@ -26,6 +26,7 @@ body {
   padding-bottom: 24px;
   margin-bottom: 24px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  gap: 16px;
 }
 
 .brand {
@@ -48,7 +49,34 @@ body {
 
 .brand p {
   font-size: 13px;
-  color: #9ca3af;
+  color: #94a3b8;
+}
+
+.header-buttons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.reset-btn {
+  background: #1f2937;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #cbd5e1;
+  border-radius: 10px;
+  padding: 10px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.reset-btn:hover {
+  background: #374151;
+  color: #ffffff;
+}
+
+.reset-btn:focus-visible {
+  outline: 2px solid #818cf8;
 }
 
 .save-btn {
@@ -57,7 +85,7 @@ body {
   border: none;
   border-radius: 10px;
   padding: 10px 22px;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
@@ -67,6 +95,10 @@ body {
 .save-btn:hover {
   background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
   transform: translateY(-1px);
+}
+
+.save-btn:focus-visible {
+  outline: 2px solid #818cf8;
 }
 
 .settings-grid {
@@ -125,7 +157,7 @@ label {
 
 .help-text {
   font-size: 11px;
-  color: #9ca3af;
+  color: #94a3b8;
 }
 
 .inline-group {
@@ -146,6 +178,10 @@ label {
   cursor: pointer;
 }
 
+.form-select:focus-visible {
+  border-color: #818cf8;
+}
+
 .test-btn {
   background: #374151;
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -155,6 +191,14 @@ label {
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
+}
+
+.test-btn:hover {
+  background: #4b5563;
+}
+
+.test-btn:focus-visible {
+  outline: 2px solid #818cf8;
 }
 
 .range-slider {
@@ -185,7 +229,7 @@ label {
 .hex-text {
   font-family: monospace;
   font-size: 12px;
-  color: #9ca3af;
+  color: #94a3b8;
 }
 
 /* Live Preview */
@@ -209,17 +253,19 @@ label {
 .preview-sentence {
   font-size: 14px;
   line-height: 1.6;
-  padding: 6px 10px;
-  border-radius: 6px;
-  background: rgba(99, 102, 241, 0.16);
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: rgba(99, 102, 241, 0.18);
+  color: #ffffff;
 }
 
 .preview-active-word {
   background: #ffd54f;
   color: #111827;
   font-weight: 700;
-  padding: 1px 4px;
-  border-radius: 3px;
+  padding: 2px 5px;
+  border-radius: 4px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 /* Toggle Switch */
@@ -299,7 +345,7 @@ input:checked + .slider:before {
 
 .shortcuts-table td {
   padding: 8px 4px;
-  color: #9ca3af;
+  color: #94a3b8;
 }
 
 .shortcuts-table td:last-child {

@@ -1,32 +1,33 @@
 /* EchoRead AI - Scoped Floating Widget & Highlight Styles */
 
-/* CSS Custom Highlight API Styling (Modern Chrome) */
+/* CSS Custom Highlight API Styling (Modern Chrome 105+) */
 ::highlight(echoread-word) {
   background-color: #ffd54f !important;
   color: #111827 !important;
-  border-radius: 3px;
-  font-weight: 600;
-  box-shadow: 0 0 0 2px #f59e0b;
+  border-radius: 4px;
+  font-weight: 700;
+  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.4);
 }
 
 ::highlight(echoread-sentence) {
-  background-color: rgba(99, 102, 241, 0.16) !important;
-  border-radius: 4px;
+  background-color: rgba(99, 102, 241, 0.18) !important;
+  border-radius: 6px;
 }
 
 /* Fallback highlight classes */
 .echoread-active-sentence {
-  background-color: rgba(99, 102, 241, 0.16) !important;
-  border-radius: 4px;
-  transition: background-color 0.2s ease;
-  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.3);
+  background-color: rgba(99, 102, 241, 0.18) !important;
+  border-radius: 6px;
+  transition: background-color 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.35);
+  outline: none;
 }
 
 .echoread-active-word {
   background-color: #ffd54f !important;
   color: #111827 !important;
   border-radius: 3px;
-  font-weight: 600;
+  font-weight: 700;
   display: inline;
 }
 
@@ -36,31 +37,32 @@
   z-index: 2147483646;
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  background: #1e1b4b;
+  gap: 7px;
+  padding: 7px 14px;
+  background: #0f172a;
   color: #ffffff;
   border-radius: 30px;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   font-size: 13px;
   font-weight: 600;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 12px 30px -5px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.16);
   cursor: pointer;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  animation: echoread-pop-in 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: echoread-pop-in 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   user-select: none;
-  transition: transform 0.15s ease, background 0.15s ease;
+  transition: transform 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
 }
 
 #echoread-selection-bubble:hover {
-  background: #312e81;
+  background: #1e1b4b;
   transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 14px 35px -5px rgba(99, 102, 241, 0.4), 0 0 0 1px rgba(99, 102, 241, 0.5);
 }
 
 #echoread-selection-bubble svg {
-  width: 15px;
-  height: 15px;
+  width: 16px;
+  height: 16px;
   fill: currentColor;
+  color: #818cf8;
 }
 
 /* Main Floating Player Dock */
@@ -73,28 +75,28 @@
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   color: #f3f4f6;
   user-select: none;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
 }
 
 #echoread-player-container.minimized {
-  bottom: 20px;
+  bottom: 24px;
   left: auto;
-  right: 24px;
+  right: 28px;
   transform: none;
 }
 
 .echoread-player-card {
   display: flex;
   flex-direction: column;
-  background: rgba(17, 24, 39, 0.94);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 18px;
-  padding: 10px 16px;
-  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.08);
-  width: 580px;
-  max-width: 92vw;
+  background: rgba(15, 23, 42, 0.96);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 20px;
+  padding: 12px 18px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.08);
+  width: 600px;
+  max-width: 94vw;
   box-sizing: border-box;
 }
 
@@ -102,14 +104,13 @@
   display: none;
   align-items: center;
   justify-content: center;
-  width: 52px;
-  height: 52px;
-  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  width: 54px;
+  height: 54px;
+  background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%);
   border-radius: 50%;
-  box-shadow: 0 10px 25px rgba(99, 102, 241, 0.5);
+  box-shadow: 0 12px 30px rgba(99, 102, 241, 0.5), 0 0 0 2px rgba(255, 255, 255, 0.2);
   cursor: pointer;
-  border: 2px solid rgba(255, 255, 255, 0.25);
-  transition: transform 0.2s ease;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .echoread-mini-bubble:hover {
@@ -124,43 +125,63 @@
   display: flex;
 }
 
-/* Header & Progress Info */
+/* Header & Audio Wave Bars */
 .echoread-bar-top {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
   font-size: 12px;
-  color: #9ca3af;
+  color: #94a3b8;
 }
 
 .echoread-brand-group {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 
-.echoread-logo-dot {
-  width: 8px;
-  height: 8px;
-  background: #10b981;
-  border-radius: 50%;
-  box-shadow: 0 0 8px #10b981;
-  animation: echoread-pulse 2s infinite;
+/* Mini Equalizer Waves */
+.echoread-equalizer {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 12px;
+}
+
+.echoread-wave-bar {
+  width: 3px;
+  height: 4px;
+  background: #6366f1;
+  border-radius: 2px;
+  transition: height 0.15s ease;
+}
+
+.echoread-equalizer.playing .echoread-wave-bar:nth-child(1) {
+  animation: echoread-wave 0.8s ease-in-out infinite alternate;
+}
+.echoread-equalizer.playing .echoread-wave-bar:nth-child(2) {
+  animation: echoread-wave 1.1s ease-in-out infinite alternate 0.2s;
+}
+.echoread-equalizer.playing .echoread-wave-bar:nth-child(3) {
+  animation: echoread-wave 0.9s ease-in-out infinite alternate 0.4s;
 }
 
 .echoread-brand-name {
   font-weight: 700;
   color: #ffffff;
   letter-spacing: -0.2px;
+  font-size: 13px;
 }
 
 .echoread-progress-text {
   font-size: 11px;
-  color: #9ca3af;
-  background: rgba(255, 255, 255, 0.06);
-  padding: 2px 8px;
+  font-weight: 500;
+  color: #cbd5e1;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 3px 10px;
   border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .echoread-window-actions {
@@ -172,9 +193,9 @@
 .echoread-icon-btn {
   background: transparent;
   border: none;
-  color: #9ca3af;
+  color: #94a3b8;
   cursor: pointer;
-  padding: 4px;
+  padding: 5px;
   border-radius: 6px;
   display: flex;
   align-items: center;
@@ -183,18 +204,22 @@
 }
 
 .echoread-icon-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.12);
   color: #ffffff;
+}
+
+.echoread-icon-btn:focus-visible {
+  outline: 2px solid #818cf8;
 }
 
 /* Scrubbable Progress Bar */
 .echoread-progress-track {
   width: 100%;
-  height: 4px;
+  height: 5px;
   background: rgba(255, 255, 255, 0.12);
-  border-radius: 2px;
+  border-radius: 3px;
   cursor: pointer;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
   position: relative;
   overflow: hidden;
 }
@@ -203,7 +228,7 @@
   height: 100%;
   background: linear-gradient(90deg, #6366f1, #a855f7);
   width: 0%;
-  border-radius: 2px;
+  border-radius: 3px;
   transition: width 0.15s ease;
 }
 
@@ -212,45 +237,49 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  gap: 10px;
 }
 
 .echoread-playback-group {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 
 .echoread-control-btn {
   background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   color: #f3f4f6;
   border-radius: 50%;
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .echoread-control-btn:hover {
-  background: rgba(255, 255, 255, 0.16);
-  transform: scale(1.05);
+  background: rgba(255, 255, 255, 0.18);
+  transform: scale(1.06);
+}
+
+.echoread-control-btn:focus-visible {
+  outline: 2px solid #818cf8;
 }
 
 .echoread-play-pause-btn {
-  width: 44px;
-  height: 44px;
+  width: 46px;
+  height: 46px;
   background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
   border: none;
-  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+  box-shadow: 0 6px 18px rgba(99, 102, 241, 0.45);
 }
 
 .echoread-play-pause-btn:hover {
   background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
-  box-shadow: 0 6px 18px rgba(99, 102, 241, 0.6);
+  box-shadow: 0 8px 22px rgba(99, 102, 241, 0.6);
 }
 
 /* Voice & Speed Options */
@@ -262,46 +291,62 @@
 
 .echoread-speed-btn {
   background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   color: #f3f4f6;
   font-size: 12px;
-  font-weight: 600;
-  padding: 5px 10px;
+  font-weight: 700;
+  padding: 6px 12px;
   border-radius: 14px;
   cursor: pointer;
   transition: all 0.15s ease;
-  min-width: 44px;
+  min-width: 46px;
   text-align: center;
 }
 
 .echoread-speed-btn:hover {
   background: rgba(255, 255, 255, 0.18);
+  border-color: #818cf8;
+}
+
+.echoread-speed-btn:focus-visible {
+  outline: 2px solid #818cf8;
 }
 
 .echoread-voice-select {
-  background: rgba(31, 41, 55, 0.9);
+  background: #1e293b;
   border: 1px solid rgba(255, 255, 255, 0.15);
   color: #f3f4f6;
   font-size: 11px;
-  padding: 5px 8px;
+  font-weight: 500;
+  padding: 6px 10px;
   border-radius: 8px;
-  max-width: 140px;
+  max-width: 150px;
   outline: none;
   cursor: pointer;
 }
 
+.echoread-voice-select:focus-visible {
+  border-color: #818cf8;
+  outline: none;
+}
+
 .echoread-mic-btn {
   background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 50%;
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #9ca3af;
+  color: #94a3b8;
   transition: all 0.15s ease;
+}
+
+.echoread-mic-btn:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.16);
 }
 
 .echoread-mic-btn.active {
@@ -317,15 +362,15 @@
   top: 24px;
   right: 24px;
   z-index: 2147483647;
-  background: #111827;
+  background: #0f172a;
   color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 12px;
-  padding: 10px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 30px;
+  padding: 10px 20px;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   font-size: 13px;
-  font-weight: 500;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+  font-weight: 600;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   gap: 10px;
@@ -344,7 +389,7 @@
 @keyframes echoread-pop-in {
   from {
     opacity: 0;
-    transform: translateY(6px) scale(0.95);
+    transform: translateY(8px) scale(0.95);
   }
   to {
     opacity: 1;
@@ -352,14 +397,23 @@
   }
 }
 
-@keyframes echoread-pulse {
-  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
-  70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
-  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+@keyframes echoread-wave {
+  0% { height: 3px; }
+  100% { height: 12px; }
 }
 
 @keyframes echoread-pulse-red {
   0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
   70% { transform: scale(1.05); box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
   100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
+@media (max-width: 640px) {
+  #echoread-player-container {
+    bottom: 12px;
+    width: 96vw;
+  }
+  .echoread-voice-select {
+    max-width: 100px;
+  }
 }

@@ -5,10 +5,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   let activeTab = null;
   let availableVoices = [];
   let currentSpeed = 1.0;
+  let isRestrictedTab = false;
 
   // Cache DOM elements
   const tabTitleEl = document.getElementById('tab-title');
   const btnReadPage = document.getElementById('btn-read-page');
+  const readBtnText = document.getElementById('read-btn-text');
   const btnStopReading = document.getElementById('btn-stop-reading');
   const voiceSelect = document.getElementById('voice-select');
   const btnTestVoice = document.getElementById('btn-test-voice');
@@ -26,7 +28,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
     if (tabs && tabs[0]) {
       activeTab = tabs[0];
-      tabTitleEl.textContent = activeTab.title || activeTab.url || 'Active Tab';
+      const title = activeTab.title || activeTab.url || 'Active Tab';
+      tabTitleEl.textContent = title;
+      tabTitleEl.title = title;
+
+      if (activeTab.url && (activeTab.url.startsWith('chrome://') || activeTab.url.includes('chrome.google.com/webstore'))) {
+        isRestrictedTab = true;
+        readBtnText.textContent = 'Use Quick Reader (Chrome tab restricted)';
+        btnReadPage.style.opacity = '0.7';
+      }
     }
   } catch (err) {
     console.warn('[EchoRead Popup] Tab query error:', err);
@@ -57,7 +67,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       voiceSelect.appendChild(opt);
     });
 
-    // Default selection fallback
     if (!voiceSelect.value && availableVoices.length > 0) {
       const best =
         availableVoices.find((v) => v.lang.startsWith('en') && (v.name.includes('Natural') || v.name.includes('Google'))) ||
@@ -71,7 +80,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     window.speechSynthesis.onvoiceschanged = loadVoices;
   }
 
-  // 4. Voice Change Event
+  // 4. Voice Change
   voiceSelect.addEventListener('change', async () => {
     const selectedURI = voiceSelect.value;
     await chrome.storage.sync.set({ voiceURI: selectedURI });
@@ -80,14 +89,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   // 5. Test Voice Sample
   btnTestVoice.addEventListener('click', () => {
     window.speechSynthesis.cancel();
-    const utt = new SpeechSynthesisUtterance('Hello! EchoRead brings words to life.');
+    const utt = new SpeechSynthesisUtterance('Hello! EchoRead brings your words to life.');
     const selectedVoice = availableVoices.find((v) => v.voiceURI === voiceSelect.value);
     if (selectedVoice) utt.voice = selectedVoice;
     utt.rate = currentSpeed;
     window.speechSynthesis.speak(utt);
   });
 
-  // 6. Speed Chips Handlers
+  // 6. Speed Chips
   speedChips.forEach((chip) => {
     chip.addEventListener('click', async () => {
       const spd = parseFloat(chip.dataset.speed);
@@ -112,12 +121,18 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // 7. Read Page Aloud
   btnReadPage.addEventListener('click', async () => {
+    if (isRestrictedTab) {
+      // Direct user to full reader
+      await chrome.tabs.create({ url: chrome.runtime.getURL('reader/reader.html') });
+      window.close();
+      return;
+    }
+
     if (!activeTab || !activeTab.id) return;
     try {
       await chrome.tabs.sendMessage(activeTab.id, { action: 'read-full-page' });
-      window.close(); // Close popup so user sees webpage highlighting
+      window.close();
     } catch (e) {
-      // In case content script needs injecting
       await chrome.runtime.sendMessage({
         action: 'forward-to-tab',
         payload: { action: 'read-full-page' }
@@ -149,7 +164,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       return;
     }
 
-    if (activeTab && activeTab.id) {
+    if (!isRestrictedTab && activeTab && activeTab.id) {
       try {
         await chrome.tabs.sendMessage(activeTab.id, { action: 'read-selection', text });
         window.close();
@@ -157,7 +172,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       } catch (e) {}
     }
 
-    // Fallback: speak locally
+    // Direct playback in speech synthesis
     window.speechSynthesis.cancel();
     const utt = new SpeechSynthesisUtterance(text);
     const selectedVoice = availableVoices.find((v) => v.voiceURI === voiceSelect.value);
